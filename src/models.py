@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import String, Boolean
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy import String, Boolean, ForeignKey, Enum, Date, Time, DateTime, Integer, Numeric
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+from eralchemy2 import render_er
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -17,3 +19,9 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+
+try:
+    render_er(db.Model, 'diagram.png')
+    print("✅ Diagrama generado correctamente como diagram.png")
+except Exception as e:
+    print("❌ Error generando el diagrama:", e)
