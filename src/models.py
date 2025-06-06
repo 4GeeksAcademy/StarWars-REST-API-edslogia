@@ -10,8 +10,12 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
-    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)
-
+    age: Mapped[int] = mapped_column(Integer(), nullable=False)
+    nickname:Mapped[str] = mapped_column(String(16), nullable=False)
+    is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)  
+    favorite_planet: Mapped[list["FavoritePlanet"]] = relationship("FavoritePlanet", back_populates="user")
+    favorite_species: Mapped[list["FavoriteSpecies"]] = relationship("FavoriteSpecies", back_populates="user")
+    planet_people: Mapped[list["FavoritePeople"]] = relationship("FavoritePeople", back_populates="user")
 
     def serialize(self):
         return {
@@ -19,6 +23,24 @@ class User(db.Model):
             "email": self.email,
             # do not serialize the password, its a security breach
         }
+    
+class FavoritePlanet(db.Model):
+    id: Mapped[int] = mapped_column(Integer(),primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("user.id"))
+    user: Mapped["User"] = relationship("User", back_populates="favorite_planet")
+
+class FavoriteSpecies(db.Model):
+    id: Mapped[int] = mapped_column(Integer(),primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("user.id"))
+    user: Mapped["User"] = relationship("User", back_populates="favorite_species")
+
+class FavoritePeople(db.Model):
+    id: Mapped[int] = mapped_column(Integer(),primary_key=True)
+    name: Mapped[str] = mapped_column(String(80), nullable=False)
+    user_id: Mapped[int] = mapped_column(Integer(), ForeignKey("user.id"))
+    user: Mapped["User"] = relationship("User", back_populates="favorite_people")
 
 try:
     render_er(db.Model, 'diagram.png')
