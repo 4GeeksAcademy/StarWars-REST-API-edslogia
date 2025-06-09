@@ -68,12 +68,12 @@ class Planets(db.Model):
         }  
 
 class Species(db.Model):
-    id: Mapped[int] = mapped_column(Integer(),primary_key=True)
-    name: Mapped[str] = mapped_column(String(80), nullable=False)
-    average_height: Mapped[float] = mapped_column(Numeric(3,2), nullable=False)
-    classification: Mapped[str] = mapped_column(String(80), nullable=False)
-    language: Mapped[str] = mapped_column(String(80), nullable=False)
-    skin_colors: Mapped[str] = mapped_column(String(80), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    average_height: Mapped[float] = mapped_column(nullable=False)
+    classification: Mapped[str] = mapped_column(nullable=False)
+    language: Mapped[str] = mapped_column(nullable=False)
+    skin_colors: Mapped[str] = mapped_column(nullable=False)
     fans: Mapped[list["User"]] = relationship("User", secondary=user_species_favorites, back_populates="favorite_species")
 
     def serialize(self):
@@ -83,7 +83,7 @@ class Species(db.Model):
             "average_height": self.average_height,
             "classification": self.classification,
             "language": self.language,
-            "skin_colors": self.homeworld
+            "skin_colors": self.skin_colors
         }  
     
 class People(db.Model):

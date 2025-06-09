@@ -50,6 +50,18 @@ def get_planet_by_id(id):
     status_code = 400 if planet is None else 200
     return jsonify(planet.serialize()), status_code
 
+@app.route('/species/<int:id>', methods=['GET'])
+def get_species_by_id(id):
+    species = Species.query.get(id)
+    status_code = 400 if species is None else 200
+    return jsonify(species.serialize()), status_code
+
+@app.route('/people/<int:id>', methods=['GET'])
+def get_people_by_id(id):
+    person = People.query.get(id)
+    status_code = 400 if person is None else 200
+    return jsonify(person.serialize()), status_code
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
