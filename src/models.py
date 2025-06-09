@@ -83,7 +83,7 @@ class Species(db.Model):
             "average_height": self.average_height,
             "classification": self.classification,
             "language": self.language,
-            "homeworld": self.homeworld
+            "skin_colors": self.homeworld
         }  
     
 class People(db.Model):
