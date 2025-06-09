@@ -44,6 +44,12 @@ def handle_hello():
 
     return jsonify(response_body), 200
 
+@app.route('/planets/<int:id>', methods=['GET'])
+def get_planet_by_id(id):
+    planet = Planets.query.get(id)
+    status_code = 400 if planet is None else 200
+    return jsonify(planet.serialize()), status_code
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
