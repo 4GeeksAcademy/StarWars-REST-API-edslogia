@@ -6,6 +6,28 @@ from datetime import datetime
 
 db = SQLAlchemy()
 
+user_planet_favorites = Table(
+    "user_planet_favorites",
+    db.metadata,
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("planet_id", ForeignKey("planets.id"), primary_key=True)
+)
+
+user_species_favorites = Table(
+    "user_species_favorites",
+    db.metadata,
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("species_id", ForeignKey("species.id"), primary_key=True)
+)
+
+user_people_favorites = Table(
+    "user_people_favorites",
+    db.metadata,
+    Column("user_id", ForeignKey("user.id"), primary_key=True),
+    Column("person_id", ForeignKey("people.id"), primary_key=True)
+)
+
+
 class User(db.Model):
     id: Mapped[int] = mapped_column(Integer(), primary_key=True)
     email: Mapped[str] = mapped_column(String(120), unique=True, nullable=False)
@@ -13,6 +35,9 @@ class User(db.Model):
     age: Mapped[int] = mapped_column(Integer(), nullable=False)
     nickname:Mapped[str] = mapped_column(String(16), nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean(), nullable=False)  
+    favorite_planets: Mapped[list["Planets"]] = relationship("Planets", secondary=user_planet_favorites, back_populates="fans")
+    favorite_species: Mapped[list["Species"]] = relationship("Species", secondary=user_species_favorites, back_populates="fans")
+    favorite_people: Mapped[list["People"]] = relationship("People", secondary=user_people_favorites, back_populates="fans")
 
     def serialize(self):
         return {
@@ -21,7 +46,7 @@ class User(db.Model):
             "nickname": self.nickname,
             "favorite_planet" : self.favorite_planet,
             "favorite_species" : self.favorite_species,
-            "favorite_planet" : self.favorite_people
+            "favorite_people" : self.favorite_people
         }
 
 class Planets(db.Model):
@@ -31,6 +56,7 @@ class Planets(db.Model):
     diameter_km: Mapped[float] = mapped_column(Numeric(20,2), nullable=False)
     population: Mapped[int] = mapped_column(Integer(), nullable=False)
     terrain: Mapped[str] = mapped_column(String(80), nullable=False)
+    fans: Mapped[list["User"]] = relationship("User", secondary=user_planet_favorites, back_populates="favorite_planets")
 
     def serialize(self):
         return {
@@ -48,7 +74,8 @@ class Species(db.Model):
     average_height: Mapped[float] = mapped_column(Numeric(3,2), nullable=False)
     classification: Mapped[str] = mapped_column(String(80), nullable=False)
     language: Mapped[str] = mapped_column(String(80), nullable=False)
-    homeworld: Mapped[str] = mapped_column(ForeignKey("planets.name"))
+    skin_colors: Mapped[str] = mapped_column(String(80), nullable=False)
+    fans: Mapped[list["User"]] = relationship("User", secondary=user_species_favorites, back_populates="favorite_species")
 
     def serialize(self):
         return {
@@ -67,6 +94,8 @@ class People(db.Model):
     eye_color: Mapped[str] = mapped_column(String(80), nullable=False)
     gender: Mapped[str] = mapped_column(String(80), nullable= True)
     height_cm: Mapped[float] = mapped_column(Numeric(10,2), nullable=False)
+    fans: Mapped[list["User"]] = relationship("User", secondary=user_people_favorites, back_populates="favorite_people")
+
 
     def serialize(self):
         return {
@@ -78,26 +107,6 @@ class People(db.Model):
             "height_cm": self.height_cm
         }  
 
-user_planet_favorites = Table(
-    "user_planet_favorites",
-    db.metadata,
-    Column("user_id", ForeignKey("user.id"), primary_key=True),
-    Column("planet_id", ForeignKey("planets.id"), primary_key=True)
-)
-
-user_species_favorites = Table(
-    "user_species_favorites",
-    db.metadata,
-    Column("user_id", ForeignKey("user.id"), primary_key=True),
-    Column("specie_id", ForeignKey("species.id"), primary_key=True)
-)
-
-user_people_favorites = Table(
-    "user_people_favorites",
-    db.metadata,
-    Column("user_id", ForeignKey("user.id"), primary_key=True),
-    Column("person_id", ForeignKey("people.id"), primary_key=True)
-)
 
 try:
     render_er(db.Model, 'diagram.png')
