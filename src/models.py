@@ -30,8 +30,9 @@ class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
     age: Mapped[int] = mapped_column(nullable=False)
-    nickname: Mapped[str] = mapped_column(String(16), nullable=False)
+    nickname: Mapped[str] = mapped_column(unique=True, nullable=False)
     is_active: Mapped[bool] = mapped_column(nullable=False)  
     favorite_planets: Mapped[list["Planets"]] = relationship("Planets", secondary=user_planet_favorites, back_populates="fans")
     favorite_species: Mapped[list["Species"]] = relationship("Species", secondary=user_species_favorites, back_populates="fans")
@@ -42,57 +43,31 @@ class User(db.Model):
             "id": self.id,
             "email": self.email,       
             "age": self.age,
+            "description": self.description,
             "nickname": self.nickname,
             "favorite_planets": [planet.serialize() for planet in self.favorite_planets],
             "favorite_species": [specie.serialize() for specie in self.favorite_species],
             "favorite_people": [person.serialize() for person in self.favorite_people]
         }
-
-class Planets(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    climate: Mapped[str] = mapped_column(nullable=False)
-    diameter_km: Mapped[float] = mapped_column(nullable=False)
-    population: Mapped[int] = mapped_column(nullable=False)
-    terrain: Mapped[str] = mapped_column(nullable=False)
-    fans: Mapped[list["User"]] = relationship("User", secondary=user_planet_favorites, back_populates="favorite_planets")
-
-    def serialize(self):
-        return {
+    
+    def serialize_favorites(self):
+        return{
             "id": self.id,
-            "name": self.name,
-            "climate": self.climate,
-            "diameter_km": self.diameter_km,
-            "population": self.population,
-            "terrain": self.terrain
-        }  
-
-class Species(db.Model):
-    id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(nullable=False)
-    average_height: Mapped[float] = mapped_column(nullable=False)
-    classification: Mapped[str] = mapped_column(nullable=False)
-    language: Mapped[str] = mapped_column(nullable=False)
-    skin_colors: Mapped[str] = mapped_column(nullable=False)
-    fans: Mapped[list["User"]] = relationship("User", secondary=user_species_favorites, back_populates="favorite_species")
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "average_height": self.average_height,
-            "classification": self.classification,
-            "language": self.language,
-            "skin_colors": self.skin_colors
-        }  
+            "email": self.email,    
+            "nickname": self.nickname,
+        }
+    
     
 class People(db.Model):
-    id: Mapped[int] = mapped_column(Integer(),primary_key=True)
-    name: Mapped[str] = mapped_column(String(80), nullable=False)
-    birth_year: Mapped[str] = mapped_column(String(80), nullable=False)
-    eye_color: Mapped[str] = mapped_column(String(80), nullable=False)
-    gender: Mapped[str] = mapped_column(String(80), nullable= True)
-    height_cm: Mapped[float] = mapped_column(Numeric(10,2), nullable=False)
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    height: Mapped[int] = mapped_column(nullable=False)
+    gender: Mapped[str] = mapped_column(nullable=False)
+    birth_year: Mapped[str] = mapped_column(nullable=False)
+    hair_color: Mapped[str] = mapped_column(nullable=False)
+    mass: Mapped[int] = mapped_column(nullable=False)
+    skin_color: Mapped[str] = mapped_column(nullable=False)
     fans: Mapped[list["User"]] = relationship("User", secondary=user_people_favorites, back_populates="favorite_people")
 
 
@@ -100,8 +75,69 @@ class People(db.Model):
         return {
             "id": self.id,
             "name": self.name,
-            "birth_year": self.birth_year,
-            "eye_color": self.eye_color,
+            "description": self.description,
+            "height": self.height,
             "gender": self.gender,
-            "height_cm": self.height_cm
+            "birth_year": self.birth_year,
+            "hair_color": self.hair_color,
+            "mass": self.mass,
+            "skin_color": self.skin_color,
+            "fans": [fan.serialize_favorites() for fan in self.fans]            
         }  
+
+class Planets(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    population: Mapped[int] = mapped_column(nullable=False)
+    climate: Mapped[str] = mapped_column(nullable=False)
+    gravity: Mapped[int] = mapped_column(nullable=False)
+    diameter: Mapped[int] = mapped_column(nullable=False)
+    orbital_period: Mapped[int] = mapped_column(nullable=False)
+    terrain: Mapped[str] = mapped_column(nullable=False)
+    rotation_period: Mapped[int] = mapped_column(nullable=False)
+    fans: Mapped[list["User"]] = relationship("User", secondary=user_planet_favorites, back_populates="favorite_planets")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "population": self.population,
+            "climate": self.climate,
+            "gravity": self.gravity,
+            "diameter": self.diameter,
+            "orbital_period": self.orbital_period,
+            "terrain": self.terrain,
+            "rotation_period": self.rotation_period,
+            "fans": [fan.serialize_favorites() for fan in self.fans],
+        }  
+
+class Species(db.Model):
+    id: Mapped[int] = mapped_column(primary_key=True)
+    name: Mapped[str] = mapped_column(nullable=False)
+    description: Mapped[str] = mapped_column(nullable=False)
+    classification: Mapped[str] = mapped_column(nullable=False)
+    language: Mapped[str] = mapped_column(nullable=False)
+    average_lifespan: Mapped[int] = mapped_column(nullable=False)
+    average_height: Mapped[int] = mapped_column(nullable=False)
+    designation: Mapped[str] = mapped_column(nullable=False)
+    eye_colors: Mapped[str] = mapped_column(nullable=False)
+    hair_colors: Mapped[str] = mapped_column(nullable=False)
+    fans: Mapped[list["User"]] = relationship("User", secondary=user_species_favorites, back_populates="favorite_species")
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "description": self.description,
+            "classification": self.classification,
+            "language": self.language,
+            "average_lifespan": self.average_lifespan,
+            "average_height": self.average_height,
+            "designation": self.designation,
+            "eye_colors": self.eye_colors,
+            "hair_colors": self.hair_colors,
+            "fans": [fan.serialize_favorites() for fan in self.fans],
+        }  
+    
