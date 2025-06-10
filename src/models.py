@@ -26,7 +26,7 @@ user_people_favorites = Table(
 )
 
 
-class User(db.Model):
+class User(db.model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
@@ -58,7 +58,7 @@ class User(db.Model):
         }
     
     
-class People(db.Model):
+class People(db.model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -85,7 +85,7 @@ class People(db.Model):
             "fans": [fan.serialize_favorites() for fan in self.fans]            
         }  
 
-class Planets(db.Model):
+class Planets(db.model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -113,7 +113,7 @@ class Planets(db.Model):
             "fans": [fan.serialize_favorites() for fan in self.fans],
         }  
 
-class Species(db.Model):
+class Species(db.model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -141,3 +141,33 @@ class Species(db.Model):
             "fans": [fan.serialize_favorites() for fan in self.fans],
         }  
     
+
+class ImgPeople(db.model):    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(nullable=False)
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "url": self.url,
+        }
+    
+class ImgPlanets(db.model):    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(nullable=False)
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "url": self.url,
+        }
+    
+class ImgSpecies(db.model):    
+    id: Mapped[int] = mapped_column(primary_key=True)
+    url: Mapped[str] = mapped_column(nullable=False)
+
+    def serialize(self):
+        return{
+            "id": self.id,
+            "url": self.url,
+        }
