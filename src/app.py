@@ -203,6 +203,49 @@ def delete_favorite_species(species_id):
     else:
         return jsonify({"msg": "la especie no es favorito del usuario"})
 
+@app.route('/species', methods=['POST'])
+def add_species():
+    data = request.get_json()
+
+    required_fields = [
+        "name", "description", "classification", "language",
+        "average_lifespan", "average_height", "designation",
+        "eye_colors", "hair_colors"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg": f"Falta el campo requerido: {field}"}), 400
+
+    try:
+        new_species = Species(
+            name=data["name"],
+            description=data["description"],
+            classification=data["classification"],
+            language=data["language"],
+            average_lifespan=data["average_lifespan"],
+            average_height=data["average_height"],
+            designation=data["designation"],
+            eye_colors=data["eye_colors"],
+            hair_colors=data["hair_colors"]
+        )
+
+        db.session.add(new_species)
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Especie creada exitosamente",
+            "species": new_species.serialize()
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Error al crear la especie",
+            "error": str(e)
+        }), 500
+
+
 
 ################   ENDPOINTS PARA PERSONAS ##################
 
