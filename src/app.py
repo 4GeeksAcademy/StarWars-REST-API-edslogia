@@ -35,11 +35,17 @@ def handle_invalid_usage(error):
 def sitemap():
     return generate_sitemap(app)
 
+
+################   ENDPOINTS PARA USUARIOS ##################
+
 @app.route('/user', methods=['GET'])
 def get_all_user():
     users = User.query.all()
     status_code = 400 if users is None else 200
     return jsonify([user.serialize() for user in users]), status_code
+
+
+################   ENDPOINTS PARA PLANETAS ##################
 
 @app.route('/planets/<int:id>', methods=['GET'])
 def get_planet_by_id(id):
@@ -75,6 +81,8 @@ def add_favorite_planet(planet_id):
         return jsonify({"msg": "agregado"}), 200 
 
 
+################   ENDPOINTS PARA ESPECIES ##################
+
 @app.route('/species/<int:id>', methods=['GET'])
 def get_species_by_id(id):
     species = Species.query.get(id)
@@ -86,6 +94,30 @@ def get_all_species():
     species = Species.query.all()
     status_code = 400 if species is None else 200
     return jsonify([specie.serialize() for specie in species]), status_code
+
+@app.route('/favorite/species/<int:species_id>', methods=['POST'])
+def add_favorite_species(species_id):
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"msg": "es necesario proporcionar un user_id"})
+    
+    species = Species.query.get(species_id)
+
+    if species is None:
+        return jsonify({"msg": "especie no existe"}), 404
+    
+    user_id = data["user_id"]
+    user = User.query.get(user_id)   
+
+    if user is None:
+        return jsonify({"msg": "usuario no existe"}), 404
+    else:
+        user.favorite_species.append(species)
+        db.session.commit()
+        return jsonify({"msg": "agregado"}), 200 
+    
+
+################   ENDPOINTS PARA PERSONAS ##################
 
 @app.route('/people/<int:id>', methods=['GET'])
 def get_people_by_id(id):
