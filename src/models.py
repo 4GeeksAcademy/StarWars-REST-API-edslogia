@@ -26,7 +26,7 @@ user_people_favorites = Table(
 )
 
 
-class User(db.model):
+class User(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     email: Mapped[str] = mapped_column(unique=True, nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
@@ -58,7 +58,7 @@ class User(db.model):
         }
     
     
-class People(db.model):
+class People(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -85,7 +85,7 @@ class People(db.model):
             "fans": [fan.serialize_favorites() for fan in self.fans]            
         }  
 
-class Planets(db.model):
+class Planets(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -113,7 +113,7 @@ class Planets(db.model):
             "fans": [fan.serialize_favorites() for fan in self.fans],
         }  
 
-class Species(db.model):
+class Species(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)
@@ -142,7 +142,7 @@ class Species(db.model):
         }  
     
 
-class ImgPeople(db.model):    
+class ImgPeople(db.Model):    
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str] = mapped_column(nullable=False)
 
@@ -152,7 +152,7 @@ class ImgPeople(db.model):
             "url": self.url,
         }
     
-class ImgPlanets(db.model):    
+class ImgPlanets(db.Model):    
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str] = mapped_column(nullable=False)
 
@@ -162,7 +162,7 @@ class ImgPlanets(db.model):
             "url": self.url,
         }
     
-class ImgSpecies(db.model):    
+class ImgSpecies(db.Model):    
     id: Mapped[int] = mapped_column(primary_key=True)
     url: Mapped[str] = mapped_column(nullable=False)
 
