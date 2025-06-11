@@ -200,7 +200,29 @@ def add_favorite_people(people_id):
         db.session.commit()
         return jsonify({"msg": "agregado"}), 200 
 
+@app.route('/favorite/people/<int:person_id>', methods=['DELETE'])
+def delete_favorite_people(person_id):
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"msg": "no hay usuario a quien agregar"})
+    
+    person = People.query.get(person_id)
 
+    if person is None:
+        return jsonify({"msg": "person no existe"}), 404
+    
+    user_id = data["user_id"]
+    user = User.query.get(user_id)   
+
+    if user is None:
+        return jsonify({"msg": "usuario no existe"}), 404
+    
+    if person in user.favorite_people:
+        user.favorite_people.remove(person)
+        db.session.commit()
+        return jsonify({"msg": "person eliminado"})
+    else:
+        return jsonify({"msg": "person no es favorito del usuario"})
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
