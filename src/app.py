@@ -105,6 +105,45 @@ def delete_favorite_planet(planet_id):
         return jsonify({"msg": "el planeta no es favorito del usuario"})
 
 
+@app.route('/planet', methods=['POST'])
+def add_planet():
+    data = request.get_json()
+
+    required_fields = [
+        "name", "description", "population", "climate",
+        "gravity", "diameter", "orbital_period",
+        "terrain", "rotation_period"
+    ]
+
+    # Validar que estén todos los campos
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg": f"Falta el campo requerido: {field}"}), 400
+
+    try:
+        # Crear nuevo planeta
+        new_planet = Planets(
+            name=data["name"],
+            description=data["description"],
+            population=data["population"],
+            climate=data["climate"],
+            gravity=data["gravity"],
+            diameter=data["diameter"],
+            orbital_period=data["orbital_period"],
+            terrain=data["terrain"],
+            rotation_period=data["rotation_period"]
+        )
+
+        db.session.add(new_planet)
+        db.session.commit()
+
+        return jsonify({"msg": "Planeta creado exitosamente", "planet": new_planet.serialize()}), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg": "Error al crear el planeta", "error": str(e)}), 500
+
+
 ################   ENDPOINTS PARA ESPECIES ##################
 
 @app.route('/species/<int:id>', methods=['GET'])
