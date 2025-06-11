@@ -305,6 +305,48 @@ def delete_favorite_people(person_id):
         return jsonify({"msg": "person eliminado"})
     else:
         return jsonify({"msg": "person no es favorito del usuario"})
+    
+
+@app.route('/people', methods=['POST'])
+def add_person():
+    data = request.get_json()
+
+    required_fields = [
+        "name", "description", "height", "gender", "birth_year",
+        "hair_color", "mass", "skin_color"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg": f"Falta el campo requerido: {field}"}), 400
+
+    try:
+        new_person = People(
+            name=data["name"],
+            description=data["description"],
+            height=data["height"],
+            gender=data["gender"],
+            birth_year=data["birth_year"],
+            hair_color=data["hair_color"],
+            mass=data["mass"],
+            skin_color=data["skin_color"]
+        )
+
+        db.session.add(new_person)
+        db.session.commit()
+
+        return jsonify({
+            "msg": "Persona creada exitosamente",
+            "person": new_person.serialize()
+        }), 201
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({
+            "msg": "Error al crear la persona",
+            "error": str(e)
+        }), 500
+
 
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
