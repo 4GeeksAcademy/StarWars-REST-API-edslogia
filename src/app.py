@@ -102,7 +102,7 @@ def delete_favorite_planet(planet_id):
         db.session.commit()
         return jsonify({"msg": "planeta eliminado"})
     else:
-        return jsonify({"msg": " el planeta no es favorito del usuario"})
+        return jsonify({"msg": "el planeta no es favorito del usuario"})
 
 
 ################   ENDPOINTS PARA ESPECIES ##################
@@ -139,7 +139,31 @@ def add_favorite_species(species_id):
         user.favorite_species.append(species)
         db.session.commit()
         return jsonify({"msg": "agregado"}), 200 
+
+@app.route('/favorite/species/<int:species_id>', methods=['DELETE'])
+def delete_favorite_species(species_id):
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"msg": "no hay usuario a quien agregar"})
     
+    species = Species.query.get(species_id)
+
+    if species is None:
+        return jsonify({"msg": "species no existe"}), 404
+    
+    user_id = data["user_id"]
+    user = User.query.get(user_id)   
+
+    if user is None:
+        return jsonify({"msg": "usuario no existe"}), 404
+    
+    if species in user.favorite_species:
+        user.favorite_species.remove(species)
+        db.session.commit()
+        return jsonify({"msg": "species eliminado"})
+    else:
+        return jsonify({"msg": "la especie no es favorito del usuario"})
+
 
 ################   ENDPOINTS PARA PERSONAS ##################
 
