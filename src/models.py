@@ -45,9 +45,9 @@ class User(db.Model):
             "age": self.age,
             "description": self.description,
             "nickname": self.nickname,
-            "favorite_planets": [planet.serialize() for planet in self.favorite_planets],
-            "favorite_species": [specie.serialize() for specie in self.favorite_species],
-            "favorite_people": [person.serialize() for person in self.favorite_people]
+            "favorite_planets": [planet.serialize_favorites() for planet in self.favorite_planets],
+            "favorite_species": [specie.serialize_favorites() for specie in self.favorite_species],
+            "favorite_people": [person.serialize_favorites() for person in self.favorite_people]
         }
     
     def serialize_favorites(self):
@@ -84,6 +84,12 @@ class People(db.Model):
             "skin_color": self.skin_color,
             "fans": [fan.serialize_favorites() for fan in self.fans]            
         }  
+    
+    def serialize_favorites(self):
+        return{
+            "name": self.name,
+            "id": self.id
+        }
 
 class Planets(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -112,6 +118,12 @@ class Planets(db.Model):
             "rotation_period": self.rotation_period,
             "fans": [fan.serialize_favorites() for fan in self.fans],
         }  
+    
+    def serialize_favorites(self):
+        return{
+            "name": self.name,
+            "id": self.id
+        }
 
 class Species(db.Model):
     id: Mapped[int] = mapped_column(primary_key=True)
@@ -141,6 +153,11 @@ class Species(db.Model):
             "fans": [fan.serialize_favorites() for fan in self.fans],
         }  
     
+    def serialize_favorites(self):
+        return{
+            "name": self.name,
+            "id": self.id
+        }    
 
 class ImgPeople(db.Model):    
     id: Mapped[int] = mapped_column(primary_key=True)

@@ -36,13 +36,10 @@ def sitemap():
     return generate_sitemap(app)
 
 @app.route('/user', methods=['GET'])
-def handle_hello():
-
-    response_body = {
-        "msg": "Hello, this is your GET /user response "
-    }
-
-    return jsonify(response_body), 200
+def get_all_user():
+    users = User.query.all()
+    status_code = 400 if users is None else 200
+    return jsonify([user.serialize() for user in users]), status_code
 
 @app.route('/planets/<int:id>', methods=['GET'])
 def get_planet_by_id(id):
@@ -55,6 +52,28 @@ def get_all_planets():
     planets = Planets.query.all()
     status_code = 400 if planets is None else 200
     return jsonify([planet.serialize() for planet in planets]), status_code
+
+@app.route('/favorite/planet/<int:planet_id>', methods=['POST'])
+def add_favorite_planet(planet_id):
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"msg": "no hay usuario a quien agregar"})
+    
+    planet = Planets.query.get(planet_id)
+
+    if planet is None:
+        return jsonify({"msg": "planeta no existe"}), 404
+    
+    user_id = data["user_id"]
+    user = User.query.get(user_id)   
+
+    if user is None:
+        return jsonify({"msg": "usuario no existe"}), 404
+    else:
+        user.favorite_planets.append(planet)
+        db.session.commit()
+        return jsonify({"msg": "agregado"}), 200 
+
 
 @app.route('/species/<int:id>', methods=['GET'])
 def get_species_by_id(id):
