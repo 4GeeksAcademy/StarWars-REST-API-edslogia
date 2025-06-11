@@ -131,6 +131,29 @@ def get_all_people():
     status_code = 400 if people is None else 200
     return jsonify([person.serialize() for person in people]), status_code
 
+@app.route('/favorite/people/<int:people_id>', methods=['POST'])
+def add_favorite_people(people_id):
+    data = request.get_json()
+    if not data or "user_id" not in data:
+        return jsonify({"msg": "es necesario proporcionar un user_id"})
+    
+    people = People.query.get(people_id)
+
+    if people is None:
+        return jsonify({"msg": "especie no existe"}), 404
+    
+    user_id = data["user_id"]
+    user = User.query.get(user_id)   
+
+    if user is None:
+        return jsonify({"msg": "usuario no existe"}), 404
+    else:
+        user.favorite_people.append(people)
+        db.session.commit()
+        return jsonify({"msg": "agregado"}), 200 
+
+
+
 # this only runs if `$ python src/app.py` is executed
 if __name__ == '__main__':
     PORT = int(os.environ.get('PORT', 3000))
