@@ -38,7 +38,7 @@ def sitemap():
 
 ################   ENDPOINTS PARA USUARIOS ##################
 
-@app.route('/user', methods=['GET'])
+@app.route('/users', methods=['GET'])
 def get_all_user():
     users = User.query.all()
     status_code = 400 if users is None else 200
@@ -336,7 +336,7 @@ def add_person():
         db.session.commit()
 
         return jsonify({
-            "msg": "Persona creada exitosamente",
+            "msg": "Personaje creado exitosamente",
             "person": new_person.serialize()
         }), 201
 
