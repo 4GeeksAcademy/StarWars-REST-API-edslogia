@@ -44,6 +44,20 @@ def get_all_user():
     status_code = 400 if users is None else 200
     return jsonify([user.serialize() for user in users]), status_code
 
+@app.route('/users/favorites/<int:id>', methods=['GET'])
+def get_all_favorites_user(id):
+    user = User.query.get(id)
+    if user is None:
+        return jsonify({"msg": "usuario no existe"})
+    favorites = {
+        "planets": [planet.serialize_favorites() for planet in user.favorite_planets],
+        "species": [specie.serialize_favorites() for specie in user.favorite_species],
+        "people": [person.serialize_favorites() for person in user.favorite_people]
+    }
+
+    print(favorites)
+    return jsonify(favorites), 200
+
 
 ################   ENDPOINTS PARA PLANETAS ##################
 
