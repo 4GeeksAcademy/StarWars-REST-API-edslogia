@@ -171,6 +171,42 @@ def delete_planet(planet_id):
     return jsonify({"msg": "planeta eliminado con éxito"}), 201
 
 
+@app.route('/planet/<int:planet_id>', methods=['PUT'])
+def update_planet(planet_id):
+    data = request.get_json()
+    required_fields = [
+        "name", "description", "population", "climate",
+        "gravity", "diameter", "orbital_period",
+        "terrain", "rotation_period"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg: ":f"Falta el campo requerido: {field}" }),400
+        
+    planet = Planets.query.get(planet_id)
+
+    if not planet:
+        return jsonify({"msg: ": "Planeta no encontrado"}), 404
+    
+    try:
+        planet.name = data["name"]
+        planet.description = data["description"]
+        planet.population = data["population"]
+        planet.climate = data["climate"]
+        planet.gravity = data["gravity"]
+        planet.diameter = data["diameter"]
+        planet.orbital_period = data["orbital_period"]
+        planet.terrain = data["terrain"]
+        planet.rotation_period = data["rotation_period"]
+
+        db.session.commit()
+        return jsonify({"msg: ": "Planeta actualizado exitosamente", "planet": planet.serialize()})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg: ": "Error al actualizar el planeta", "error": str(e)}),500
+
 ################   ENDPOINTS PARA ESPECIES ##################
 
 @app.route('/species/<int:id>', methods=['GET'])
@@ -285,6 +321,42 @@ def delete_species(species_id):
 
     return jsonify({"msg": "species eliminado con éxito"}), 201
 
+@app.route('/species/<int:species_id>', methods=['PUT'])
+def update_species(species_id):
+    data = request.get_json()
+    required_fields = [
+        "name", "description", "classification", "language",
+        "average_lifespan", "average_height", "designation",
+        "eye_colors", "hair_colors"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg: ":f"Falta el campo requerido: {field}" }),400
+        
+    species = Species.query.get(species_id)
+
+    if not species:
+        return jsonify({"msg: ": "Species no encontrado"}), 404
+    
+    try:
+        species.name = data["name"]
+        species.description = data["description"]
+        species.classification = data["classification"]
+        species.language = data["language"]
+        species.average_lifespan = data["average_lifespan"]
+        species.average_height = data["average_height"]
+        species.designation = data["designation"]
+        species.eye_colors = data["eye_colors"]
+        species.hair_colors = data["hair_colors"]
+
+        db.session.commit()
+        return jsonify({"msg: ": "Species actualizado exitosamente", "species": species.serialize()})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg: ": "Error al actualizar species", "error": str(e)}),500
+
 
 ################   ENDPOINTS PARA PERSONAS ##################
 
@@ -398,6 +470,40 @@ def delete_people(people_id):
     db.session.commit()
 
     return jsonify({"msg": "person eliminado con éxito"}), 201
+
+@app.route('/people/<int:person_id>', methods=['PUT'])
+def update_people(person_id):
+    data = request.get_json()
+    required_fields = [
+        "name", "description", "height", "gender", "birth_year",
+        "hair_color", "mass", "skin_color"
+    ]
+
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"msg: ":f"Falta el campo requerido: {field}" }),400
+        
+    person = People.query.get(person_id)
+
+    if not person:
+        return jsonify({"msg: ": "Species no encontrado"}), 404
+    
+    try:
+        person.name = data["name"]
+        person.description = data["description"]
+        person.height = data["height"]
+        person.gender = data["gender"]
+        person.birth_year = data["birth_year"]
+        person.hair_color = data["hair_color"]
+        person.mass = data["mass"]
+        person.skin_color = data["skin_color"]
+
+        db.session.commit()
+        return jsonify({"msg: ": "Species actualizado exitosamente", "person": person.serialize()})
+
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"msg: ": "Error al actualizar person", "error": str(e)}),500
 
 
 # this only runs if `$ python src/app.py` is executed
