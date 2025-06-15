@@ -152,10 +152,23 @@ def add_planet():
         db.session.commit()
 
         return jsonify({"msg": "Planeta creado exitosamente", "planet": new_planet.serialize()}), 201
-
+    
     except Exception as e:
         db.session.rollback()
         return jsonify({"msg": "Error al crear el planeta", "error": str(e)}), 500
+    
+@app.route('/planet/<int:planet_id>', methods=['DELETE'])
+def delete_planet(planet_id):
+
+    planet = Planets.query.get(planet_id)
+
+    if planet is None:
+        return jsonify({"msg": "planeta no existe"}), 404
+    
+    db.session.delete(planet)
+    db.session.commit()
+
+    return jsonify({"msg": "planeta eliminado con éxito"}), 201
 
 
 ################   ENDPOINTS PARA ESPECIES ##################
@@ -184,7 +197,7 @@ def add_favorite_species(species_id):
         return jsonify({"msg": "especie no existe"}), 404
     
     user_id = data["user_id"]
-    user = User.query.get(user_id)   
+    user = User.query.get(user_id)  
 
     if user is None:
         return jsonify({"msg": "usuario no existe"}), 404
@@ -259,6 +272,18 @@ def add_species():
             "error": str(e)
         }), 500
 
+@app.route('/species/<int:species_id>', methods=['DELETE'])
+def delete_species(species_id):
+
+    species = Species.query.get(species_id)
+
+    if species is None:
+        return jsonify({"msg": "species no existe"}), 404
+    
+    db.session.delete(species)
+    db.session.commit()
+
+    return jsonify({"msg": "species eliminado con éxito"}), 201
 
 
 ################   ENDPOINTS PARA PERSONAS ##################
@@ -360,6 +385,19 @@ def add_person():
             "msg": "Error al crear la persona",
             "error": str(e)
         }), 500
+    
+@app.route('/people/<int:people_id>', methods=['DELETE'])
+def delete_people(people_id):
+
+    person = People.query.get(people_id)
+
+    if person is None:
+        return jsonify({"msg": "person no existe"}), 404
+    
+    db.session.delete(person)
+    db.session.commit()
+
+    return jsonify({"msg": "person eliminado con éxito"}), 201
 
 
 # this only runs if `$ python src/app.py` is executed
